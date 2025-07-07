@@ -17,6 +17,8 @@ import {
   X,
 } from "lucide-react";
 import AddMemberForm from "./AddMemberForm";
+import MemberDetailsPage from "./MemberDetailsPage";
+import type { MemberType } from "../../types";
 
 // --- FONCTIONS UTILITAIRES ---
 // Pour générer une grande quantité de données fictives
@@ -115,6 +117,8 @@ const generatePaginationItems = (currentPage: number, totalPages: number) => {
 
 // --- COMPOSANT PRINCIPAL ---
 
+// Définition du type pour un membre
+
 const MembersList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [resultsPerPage, setResultsPerPage] = useState(10);
@@ -195,13 +199,24 @@ const MembersList = () => {
     selectedMembers.length === paginatedMembers.length;
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<MemberType | null>(null);
+
+  // Si un membre est sélectionné pour voir les détails, on affiche la page de détails
+  if (selectedMember) {
+    return (
+      <MemberDetailsPage
+        member={selectedMember}
+        onBack={() => setSelectedMember(null)}
+      />
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] font-sans">
+    <div className="min-h-screen bg-[#F8F9FA] font-sans ">
       <main className="p-4 sm:p-6 lg:p-8">
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-6 ">
           {/* COLONNE GAUCHE */}
-          <div className="flex-1">
+          <div className="flex-1 ">
             <div className="flex justify-between items-center mb-6">
               {/* Style du bouton "Importer" mis à jour */}
               <button className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm font-medium">
@@ -280,7 +295,7 @@ const MembersList = () => {
                 </div>
               </div>
 
-              <div className="px-4 py-3 flex items-center text-xs font-semibold text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
+              <div className="  px-4 py-3 flex items-center text-xs font-semibold text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
                 <div className="w-10">
                   <input
                     type="checkbox"
@@ -349,11 +364,14 @@ const MembersList = () => {
                         {showMemberActions === member.id && (
                           <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border z-10">
                             <ul className="py-1 text-sm text-gray-700 divide-y divide-gray-100">
-                              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-start gap-3">
-                                <Eye
-                                  size={16}
-                                  className="text-green-500 mt-1"
-                                />
+                              <li
+                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-start gap-3"
+                                onClick={() => {
+                                  setSelectedMember(member);
+                                  setShowMemberActions(null);
+                                }}
+                              >
+                                <Eye size={16} className="text-green-500 mt-1" />
                                 <div>
                                   <p>Voir</p>
                                   <p className="text-xs text-gray-400">
@@ -441,7 +459,7 @@ const MembersList = () => {
           </div>
 
           {/* COLONNE DROITE */}
-          <aside className="w-full lg:w-1/4 lg:max-w-xs">
+          <aside className="w-full lg:w-1/4 lg:max-w-xs ">
             <div className="space-y-4 sticky top-6">
               {/* Filtre par Groupes Amélioré */}
               <div className="bg-white rounded-xl shadow-md border border-gray-200">

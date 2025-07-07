@@ -48,3 +48,22 @@ export interface DashboardStats {
   users: number;
   members: number;
 }
+
+export interface MemberType {
+  id: string;
+  name: string;
+  firstName: string;
+  email: string;
+  phone: string;
+  group: string;
+  stage: string;
+  tags: string[];
+  initials: string;
+  color: string;
+  nationality?: string;
+  profession?: string;
+  birthDate?: string;
+  city?: string;
+  address?: string;
+  maritalStatus?: string;
+}
