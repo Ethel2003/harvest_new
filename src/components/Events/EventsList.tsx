@@ -1,263 +1,347 @@
-import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Users, Plus, Edit, Trash2, Eye } from 'lucide-react';
-import { Event } from '../../types';
+import { useState, useMemo } from "react";
+import { Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
+import AddEventModal from "./AddEventModal";
 
-const EventsList: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
-  const [showAddModal, setShowAddModal] = useState(false);
+// --- COMPOSANT CALENDRIER DYNAMIQUE ---
+const CalendarWidget = () => {
+  const [currentDate, setCurrentDate] = useState(new Date(2020, 9, 1));
+  const [selectedDate, setSelectedDate] = useState(new Date(2020, 9, 18));
+  const handlePrevMonth = () =>
+    setCurrentDate(
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
+    );
+  const handleNextMonth = () =>
+    setCurrentDate(
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
+    );
 
-  const mockEvents: Event[] = [
-    {
-      id: '1',
-      title: 'Réunion mensuelle',
-      description: 'Réunion de suivi mensuel avec toutes les équipes',
-      date: '2024-01-25',
-      time: '14:00',
-      location: 'Salle de conférence A',
-      attendees: 15,
-      maxAttendees: 20,
-      type: 'meeting'
-    },
-    {
-      id: '2',
-      title: 'Formation React',
-      description: 'Atelier de formation sur React et TypeScript',
-      date: '2024-01-28',
-      time: '09:00',
-      location: 'Salle de formation',
-      attendees: 12,
-      maxAttendees: 15,
-      type: 'workshop'
-    },
-    {
-      id: '3',
-      title: 'Événement networking',
-      description: 'Soirée de networking avec les partenaires',
-      date: '2024-02-05',
-      time: '18:30',
-      location: 'Restaurant Le Jardin',
-      attendees: 45,
-      maxAttendees: 50,
-      type: 'social'
+  const renderCalendarDays = () => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const startDayIndex = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+    const days = [];
+
+    // Cellules vides pour les jours avant le début du mois
+    for (let i = 0; i < startDayIndex; i++) {
+      days.push(<div key={`empty-prev-${i}`}></div>);
     }
-  ];
 
-  const getEventTypeColor = (type: string) => {
-    switch (type) {
-      case 'meeting': return 'bg-blue-100 text-blue-800';
-      case 'workshop': return 'bg-green-100 text-green-800';
-      case 'conference': return 'bg-purple-100 text-purple-800';
-      case 'social': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+    // Jours du mois
+    for (let day = 1; day <= daysInMonth; day++) {
+      const isSelected =
+        selectedDate.getDate() === day &&
+        selectedDate.getMonth() === month &&
+        selectedDate.getFullYear() === year;
+      days.push(
+        <div
+          key={day}
+          onClick={() => setSelectedDate(new Date(year, month, day))}
+          className={`text-sm py-1.5 cursor-pointer rounded-full transition-colors flex items-center justify-center ${
+            isSelected
+              ? "bg-[#76C12C] text-white hover:bg-[#66a825]"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+        >
+          {day}
+        </div>
+      );
     }
-  };
-
-  const getEventTypeLabel = (type: string) => {
-    switch (type) {
-      case 'meeting': return 'Réunion';
-      case 'workshop': return 'Atelier';
-      case 'conference': return 'Conférence';
-      case 'social': return 'Social';
-      default: return 'Autre';
-    }
+    return days;
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Événements</h1>
-          <p className="text-gray-600">Gérez vos événements et activités</p>
-        </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-[#72C02C] text-white rounded-lg hover:bg-[#5da021] transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Créer un événement</span>
-        </button>
-      </div>
-
-      {/* View Toggle */}
-      <div className="mb-6">
-        <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1 w-fit">
+    <div className="bg-white rounded-lg shadow-sm p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-gray-800 capitalize">
+          {currentDate.toLocaleString("fr-FR", {
+            month: "long",
+            year: "numeric",
+          })}
+        </h3>
+        <div className="flex space-x-1">
           <button
-            onClick={() => setViewMode('list')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              viewMode === 'list'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
+            onClick={handlePrevMonth}
+            className="p-1 hover:bg-gray-100 rounded-full text-gray-500"
           >
-            Liste
+            <ChevronLeft size={18} />
           </button>
           <button
-            onClick={() => setViewMode('calendar')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              viewMode === 'calendar'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
+            onClick={handleNextMonth}
+            className="p-1 hover:bg-gray-100 rounded-full text-gray-500"
           >
-            Calendrier
+            <ChevronRight size={18} />
           </button>
         </div>
       </div>
+      <div className="grid grid-cols-7 gap-y-2 text-center text-xs">
+        {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((day) => (
+          <div key={day} className="font-semibold text-gray-400 py-1">
+            {day}
+          </div>
+        ))}
+        {renderCalendarDays()}
+      </div>
+    </div>
+  );
+};
+// --- COMPOSANT POUR AFFICHER UNE CARTE D'ÉVÉNEMENT ---
+const EventCard = ({ event }: { event: any }) => (
+  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+    <div className="grid grid-cols-3 gap-4 items-center">
+      <div>
+        <p className="text-sm font-semibold text-gray-800">{event.title}</p>
+        <p className="text-xs text-gray-500">
+          {new Date(event.date).toLocaleDateString("fr-FR")}
+        </p>
+        <p className="text-xs text-gray-500">{event.time}</p>
+      </div>
+      <div>
+        <p className="text-sm font-semibold text-gray-800">Intervenant</p>
+        <p className="text-xs text-gray-500">{event.speaker}</p>
+        <p className="text-xs text-gray-500">{event.location}</p>
+      </div>
+      <div>
+        <p className="text-sm font-semibold text-gray-800">Rôle Intervenant</p>
+        <p className="text-xs text-gray-500">{event.speakerRole}</p>
+      </div>
+    </div>
+  </div>
+);
 
-      {/* Events List */}
-      {viewMode === 'list' && (
-        <div className="space-y-4">
-          {mockEvents.map((event) => (
+// --- COMPOSANT PRINCIPAL DE LA PAGE ÉVÉNEMENTS ---
+const EventsList = () => {
+  const [activeTab, setActiveTab] = useState("current");
+  const [dateFrom, setDateFrom] = useState("06/07/2025");
+  const [dateTo, setDateTo] = useState("06/07/2025");
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // Données de simulation pour les événements
+  const ALL_EVENTS = useMemo(
+    () => [
+      {
+        id: 1,
+        title: "Réunion de projet",
+        date: new Date().toISOString().split("T")[0],
+        time: "10:00",
+        speaker: "Jean Dupont",
+        speakerRole: "Chef de projet",
+        location: "Salle A",
+      },
+      {
+        id: 2,
+        title: "Atelier Design",
+        date: new Date().toISOString().split("T")[0],
+        time: "14:00",
+        speaker: "Marie Curie",
+        speakerRole: "Lead Designer",
+        location: "En ligne",
+      },
+      {
+        id: 3,
+        title: "Daily Standup (Passé)",
+        date: new Date(new Date().setDate(new Date().getDate() - 1))
+          .toISOString()
+          .split("T")[0],
+        time: "09:00",
+        speaker: "Équipe Tech",
+        speakerRole: "Développeurs",
+        location: "Bureau 1",
+      },
+      {
+        id: 4,
+        title: "Présentation client (À venir)",
+        date: new Date(new Date().setDate(new Date().getDate() + 2))
+          .toISOString()
+          .split("T")[0],
+        time: "11:00",
+        speaker: "Sophie Martin",
+        speakerRole: "Commerciale",
+        location: "Client Inc.",
+      },
+      {
+        id: 5,
+        title: "Planification Sprint (À venir)",
+        date: new Date(new Date().setDate(new Date().getDate() + 5))
+          .toISOString()
+          .split("T")[0],
+        time: "15:00",
+        speaker: "Paul Robert",
+        speakerRole: "Product Owner",
+        location: "Salle B",
+      },
+    ],
+    []
+  );
+
+  // Logique de filtrage des événements en fonction de l'onglet actif
+  const filteredEvents = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Ignorer l'heure pour la comparaison de jours
+
+    switch (activeTab) {
+      case "previous":
+        return ALL_EVENTS.filter((event) => new Date(event.date) < today);
+      case "current":
+        return ALL_EVENTS.filter(
+          (event) =>
+            new Date(event.date).toDateString() === today.toDateString()
+        );
+      case "upcoming":
+        return ALL_EVENTS.filter((event) => new Date(event.date) > today);
+      default:
+        return [];
+    }
+  }, [activeTab, ALL_EVENTS]);
+
+  return (
+    <div className="min-h-screen bg-[#F8F9FA] p-4  sm:p-6 lg:p-8 font-sans">
+      <div className="flex flex-col lg:flex-row gap-6 ">
+        {/* COLONNE GAUCHE - CONTENU PRINCIPAL */}
+        <div className="flex-1 ">
+          <div className="bg-[#76C12C] rounded-lg p-10 mb-8 shadow-lg  ">
+            <div className="flex items-start gap-4 text-white ">
+              <Calendar size={36} className="mt-1" />
+              <div>
+                <h2 className="text-xl font-bold">Filtrer les événements</h2>
+                <p className="text-sm">par période</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4 mt-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="pl-10 pr-3 py-2 bg-white rounded-md text-gray-900 w-40 focus:ring-2 focus:ring-white/50 focus:outline-none"
+                />
+                <Calendar
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="pl-10 pr-3 py-2 bg-white rounded-md text-gray-900 w-40 focus:ring-2 focus:ring-white/50 focus:outline-none"
+                />
+                <Calendar
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+              </div>
+              <button className="px-8 py-2 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-800 transition-colors border border-gray-500">
+                Charger
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 ">
             <div
-              key={event.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+              onClick={() => setActiveTab("previous")}
+              className={` p-4 rounded-lg shadow-sm cursor-pointer transition-colors ${
+                activeTab === "previous"
+                  ? "bg-[#A6D785]"
+                  : "bg-white hover:bg-gray-50"
+              }`}
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEventTypeColor(event.type)}`}>
-                      {getEventTypeLabel(event.type)}
-                    </span>
-                  </div>
-                  <p className="text-gray-600 mb-4">{event.description}</p>
-                  
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{new Date(event.date).toLocaleDateString('fr-FR')}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{event.time}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <MapPin className="w-4 h-4" />
-                      <span>{event.location}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Users className="w-4 h-4" />
-                      <span>{event.attendees}/{event.maxAttendees || '∞'} participants</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-2 ml-4">
-                  <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                    <Eye className="w-4 h-4" />
-                  </button>
-                  <button className="p-2 text-[#72C02C] hover:text-[#5da021] transition-colors">
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button className="p-2 text-red-600 hover:text-red-800 transition-colors">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+              <h3 className="text-xs font-bold text-gray-600 uppercase">
+                Événement Précédent
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">Date heure</p>
+            </div>
+            <div
+              onClick={() => setActiveTab("current")}
+              className={`p-4 rounded-lg shadow-sm cursor-pointer transition-colors ${
+                activeTab === "current"
+                  ? "bg-[#A6D785]"
+                  : "bg-white hover:bg-gray-50"
+              }`}
+            >
+              <h3 className="text-xs font-bold text-gray-800 uppercase">
+                Événement en Cours
+              </h3>
+              <p className="text-sm text-gray-700 mt-1">Date heure</p>
+            </div>
+            <div
+              onClick={() => setActiveTab("upcoming")}
+              className={`p-4 rounded-lg shadow-sm cursor-pointer transition-colors ${
+                activeTab === "upcoming"
+                  ? "bg-[#A6D785]"
+                  : "bg-white hover:bg-gray-50"
+              }`}
+            >
+              <h3 className="text-xs font-bold text-gray-600 uppercase">
+                Événement à Venir
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">Date heure</p>
+            </div>
+          </div>
+
+          {/* SECTION DYNAMIQUE POUR LA LISTE DES ÉVÉNEMENTS */}
+          <div className="space-y-4">
+            {filteredEvents.length > 0 ? (
+              filteredEvents.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center text-gray-500">
+                <p>Aucun événement trouvé pour cette période.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* COLONNE DROITE - BARRE LATÉRALE */}
+        <div className="w-full lg:w-72 flex-shrink-0">
+          <div className="space-y-6">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="w-full bg-[#76C12C] text-white py-2.5 rounded-lg hover:bg-[#66a825] transition-colors font-semibold shadow-md"
+            >
+              Ajouter un événement
+            </button>
+            <CalendarWidget />
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="bg-[#76C12C] text-white text-center font-semibold py-2.5 rounded-t-lg">
+                Filtrer par
+              </div>
+              <div className="p-4">
+                <h4 className="text-sm font-bold text-gray-800 mb-3 uppercase">
+                  STOPS
+                </h4>
+                <div className="space-y-3">
+                  {["All Flights", "No Stops", "1 Stop", "2 Stops"].map(
+                    (stop, index) => (
+                      <label
+                        key={stop}
+                        className="flex items-center space-x-3 cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          name="stops"
+                          defaultChecked={index === 0}
+                          className="h-5 w-5 rounded-full border-2 border-gray-300 text-[#76C12C] focus:ring-[#76C12C] appearance-none checked:bg-[#76C12C] checked:border-[#76C12C] transition-all"
+                        />
+                        <span className="text-sm text-gray-700">{stop}</span>
+                      </label>
+                    )
+                  )}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* Calendar View */}
-      {viewMode === 'calendar' && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="text-center py-12">
-            <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Vue Calendrier</h3>
-            <p className="text-gray-600">La vue calendrier sera implémentée prochainement</p>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Add Event Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Créer un événement</h3>
-              <form className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Titre
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#72C02C] focus:border-transparent"
-                    placeholder="Nom de l'événement"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#72C02C] focus:border-transparent"
-                    placeholder="Description de l'événement"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Date
-                    </label>
-                    <input
-                      type="date"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#72C02C] focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Heure
-                    </label>
-                    <input
-                      type="time"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#72C02C] focus:border-transparent"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Lieu
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#72C02C] focus:border-transparent"
-                    placeholder="Lieu de l'événement"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Type
-                  </label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#72C02C] focus:border-transparent">
-                    <option value="meeting">Réunion</option>
-                    <option value="workshop">Atelier</option>
-                    <option value="conference">Conférence</option>
-                    <option value="social">Social</option>
-                  </select>
-                </div>
-                <div className="flex space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddModal(false)}
-                    className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 text-white bg-[#72C02C] rounded-lg hover:bg-[#5da021] transition-colors"
-                  >
-                    Créer
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Rendu de la Modale */}
+      <AddEventModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+      />
     </div>
   );
 };
