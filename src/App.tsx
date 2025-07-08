@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"; // IMPORT
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Header from "./components/Layout/Header";
 import LoginForm from "./components/Auth/LoginForm";
@@ -9,53 +9,69 @@ import EventsList from "./components/Events/EventsList";
 import FormBuilder from "./components/Apps/FormBuilder";
 import AppointmentsList from "./components/Secretariat/AppointmentsList";
 import Settings from "./components/Settings/Settings";
-import AddEventPage from "./components/Events/AddEventPage";
+
+// Pages
+import AddEventPage from "./components/Events/AddEventPage"; // Ajustez les chemins si besoin
 import EditMemberPage from "./components/Community/EditMemberPage";
 import MemberDetailsPage from "./components/Community/MemberDetailsPage";
+import MemberDetailsWrapper from "./components/Community/MemberDetailsWrapper";
 
-// Ce composant contient la logique d'affichage conditionnel (login ou app)
+// Ce composant gère l'affichage conditionnel (chargement, login, ou app principale)
 const AppContent: React.FC = () => {
   const { user, isLoading } = useAuth();
 
+  // --- LOADER ---
+  // Affiche l'écran de chargement si l'authentification est en cours
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        {/* ... Votre écran de chargement ... */}
+        <div className="text-center">
+          <div className="w-16 h-16 bg-[#72C02C] rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <span className="text-white font-bold text-xl">CM</span>
+          </div>
+          <p className="text-gray-600">Chargement...</p>
+        </div>
       </div>
     );
   }
 
+  // --- LOGIN ---
+  // Affiche le formulaire de connexion si l'utilisateur n'est pas authentifié
   if (!user) {
     return <LoginForm />;
   }
 
-  // Si l'utilisateur est connecté, on affiche la structure principale avec les routes
+  // --- APPLICATION PRINCIPALE ---
+  // Affiche l'application avec ses routes si l'utilisateur est connecté
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Le Header n'a plus besoin de onPageChange */}
       <Header />
       <main className="min-h-[calc(100vh-4rem)]">
         <Routes>
-          {/* Les routes remplacent votre ancien switch/case */}
+          {/* Routes de base */}
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/apps" element={<FormBuilder />} />
+          <Route path="/secretariat" element={<AppointmentsList />} />
+          <Route path="/settings" element={<Settings />} />
+
+          {/* Routes pour la Communauté (Members) */}
           <Route path="/community" element={<MembersList />} />
           <Route
-            path="/community/details/:memberId"
-            element={<MemberDetailsPage />}
+            path="/community/details/:id"
+            element={<MemberDetailsWrapper />}
           />
-          <Route path="/events" element={<EventsList />} />
-          {/* NOUVELLE ROUTE DÉDIÉE */}
-          <Route path="/events/add" element={<AddEventPage />} />
           <Route
             path="/community/edit/:memberId"
             element={<EditMemberPage />}
           />
 
-          <Route path="/apps" element={<FormBuilder />} />
-          <Route path="/secretariat" element={<AppointmentsList />} />
-          <Route path="/settings" element={<Settings />} />
+          {/* Routes pour les Événements */}
+          <Route path="/events" element={<EventsList />} />
+          <Route path="/events/add" element={<AddEventPage />} />
+          {/* Vous pourriez ajouter ici : <Route path="/events/edit/:eventId" element={<EditEventPage />} /> */}
 
-          {/* Redirection par défaut vers le dashboard */}
+          {/* Route par défaut : redirige vers le tableau de bord */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </main>
@@ -63,10 +79,10 @@ const AppContent: React.FC = () => {
   );
 };
 
+// Le composant App principal qui fournit le contexte d'authentification et le routeur
 function App() {
   return (
     <AuthProvider>
-      {/* BrowserRouter doit envelopper tout ce qui utilisera le routage */}
       <BrowserRouter>
         <AppContent />
       </BrowserRouter>

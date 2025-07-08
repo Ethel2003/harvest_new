@@ -23,7 +23,7 @@ import type { MemberType } from "../../types";
 
 // --- FONCTIONS UTILITAIRES ---
 // Pour générer une grande quantité de données fictives
-const generateMockMembers = (count: number) => {
+export const generateMockMembers = (count: number) => {
   const members = [];
   const lastNames = [
     "ABDOU",
@@ -365,24 +365,24 @@ const MembersList = () => {
                         {showMemberActions === member.id && (
                           <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border z-10">
                             <ul className="py-1 text-sm text-gray-700 divide-y divide-gray-100">
-                              <li
-                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-start gap-3"
-                                onClick={() => {
-                                  setSelectedMember(member);
-                                  setShowMemberActions(null);
-                                }}
+                              <Link
+                                to={`/community/details/${member.id}`}
+                                onClick={() => setShowMemberActions(null)}
                               >
-                                <Eye
-                                  size={16}
-                                  className="text-green-500 mt-1"
-                                />
-                                <div>
-                                  <p>Voir</p>
-                                  <p className="text-xs text-gray-400">
-                                    Voir les détails du membre
-                                  </p>
-                                </div>
-                              </li>
+                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-start gap-3">
+                                  <Eye
+                                    size={16}
+                                    className="text-green-500 mt-1"
+                                  />
+                                  <div>
+                                    <p>Voir</p>
+                                    <p className="text-xs text-gray-400">
+                                      Voir les détails du membre
+                                    </p>
+                                  </div>
+                                </li>
+                              </Link>
+
                               <Link
                                 to={`/community/edit/${member.id}`}
                                 onClick={() => setShowMemberActions(null)} // Ferme le menu en naviguant

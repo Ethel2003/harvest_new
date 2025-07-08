@@ -11,6 +11,8 @@ import {
   UserPlus,
 } from "lucide-react";
 import type { MemberType } from "../../types";
+import ConjointModal from "./ConjointModal";
+import ChildModal from "./ChildModal";
 
 // --- Sous-composants pour la clarté ---
 type InfoSectionProps = { details: Record<string, string> };
@@ -66,26 +68,80 @@ const TagsSection: React.FC<TagsSectionProps> = ({ tags }) => (
   </div>
 );
 
-const FamilySection: React.FC = () => (
-  <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
-    <h3 className="text-xs font-semibold uppercase text-gray-500 mb-4 tracking-wider">
-      Conjoint(e) & Enfants
-    </h3>
-    <div className="flex flex-col items-center justify-center py-6">
-      <UserPlus size={40} className="text-gray-300" />
-      <p className="mt-3 text-sm text-gray-500">
-        Aucun(e) conjoint(e) enregistré(e)
-      </p>
-      <button className="mt-2 px-3 py-1 border rounded-md text-xs text-gray-600 hover:bg-gray-100">
-        Ajouter un(e) conjoint(e)
-      </button>
-      <p className="mt-4 text-sm text-gray-500">Aucun enfant enregistré</p>
-      <button className="mt-2 px-3 py-1 border rounded-md text-xs text-gray-600 hover:bg-gray-100">
-        Ajouter un enfant
-      </button>
+const FamilySection: React.FC = () => {
+  const [showConjointModal, setShowConjointModal] = useState(false);
+  const [showChildModal, setShowChildModal] = useState(false);
+
+  const fakeMembers = [
+    { id: "1", name: "Jean Gandji" },
+    { id: "2", name: "Sarah Kodjo" },
+  ];
+
+  const fakeChildren = [
+    { id: "3", name: "ABDOU-Naomi" },
+    { id: "4", name: "ABODUNRIN-Wilson" },
+    { id: "5", name: "ABOH-Melvina" },
+    { id: "6", name: "Abol-Sabrina" },
+  ];
+
+  const handleConjointSave = (id: string) => {
+    console.log("Conjoint sélectionné :", id);
+    setShowConjointModal(false);
+  };
+
+  const handleChildrenSave = (ids: string[]) => {
+    console.log("Enfants sélectionnés :", ids);
+    setShowChildModal(false);
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
+      <h3 className="text-xs font-semibold uppercase text-gray-500 mb-4 tracking-wider">
+        Conjoint(e) & Enfants
+      </h3>
+      <div className="flex flex-col items-center justify-center py-6">
+        <UserPlus size={40} className="text-gray-300" />
+        <p className="mt-3 text-sm text-gray-500">
+          Aucun(e) conjoint(e) enregistré(e)
+        </p>
+
+        <button
+          onClick={() => setShowConjointModal(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors font-medium shadow mt-2"
+        >
+          <UserPlus size={18} />
+          Ajouter un(e) conjoint(e)
+        </button>
+
+        <p className="mt-4 text-sm text-gray-500">Aucun enfant enregistré</p>
+
+        <button
+          onClick={() => setShowChildModal(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors font-medium shadow mt-2"
+        >
+          <UserPlus size={18} />
+          Ajouter un enfant
+        </button>
+
+        {showConjointModal && (
+          <ConjointModal
+            members={fakeMembers}
+            onClose={() => setShowConjointModal(false)}
+            onSave={handleConjointSave}
+          />
+        )}
+
+        {showChildModal && (
+          <ChildModal
+            childrenList={fakeChildren}
+            onClose={() => setShowChildModal(false)}
+            onSave={handleChildrenSave}
+          />
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // --- COMPOSANT PRINCIPAL DE LA PAGE DE DÉTAILS ---
 type MemberDetailsPageProps = {
@@ -124,52 +180,51 @@ const MemberDetailsPage: React.FC<MemberDetailsPageProps> = ({
       {/* En-tête de la page */}
       <header className="flex mx-auto max-w-6xl justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800 uppercase">Details</h1>
-          <div className="relative">
-            <button
-              onClick={() => setIsActionMenuOpen(!isActionMenuOpen)}
-              className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors shadow-sm"
-            >
-              <span>Actions</span>
-              <ChevronDown size={16} />
-            </button>
-            {isActionMenuOpen && (
-              <div className="absolute right-0 mt-2 w-60 bg-white rounded-md shadow-lg border z-10">
-                <ul className="py-1 text-sm text-gray-700">
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
-                    <Tag size={16} className="text-gray-400" /> Associer un tag
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
-                    <CheckSquare size={16} className="text-gray-400" /> Associer
-                    une étape
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
-                    <Home size={16} className="text-gray-400" /> Insérer dans un
-                    département
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
-                    <RefreshCw size={16} className="text-gray-400" /> Rétirer
-                    d'un département
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
-                    <Users size={16} className="text-gray-400" /> Insérer dans
-                    un groupe
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
-                    <RefreshCw size={16} className="text-gray-400" /> Rétirer
-                    d'un groupe
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
+        <div className="relative">
           <button
-            onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2 bg-white text-blue-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors shadow-sm"
+            onClick={() => setIsActionMenuOpen(!isActionMenuOpen)}
+            className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors shadow-sm"
           >
-            <ArrowLeft size={16} />
-            <span>Retour</span>
+            <span>Actions</span>
+            <ChevronDown size={16} />
           </button>
-        
+          {isActionMenuOpen && (
+            <div className="absolute right-0 mt-2 w-60 bg-white rounded-md shadow-lg border z-10">
+              <ul className="py-1 text-sm text-gray-700">
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
+                  <Tag size={16} className="text-gray-400" /> Associer un tag
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
+                  <CheckSquare size={16} className="text-gray-400" /> Associer
+                  une étape
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
+                  <Home size={16} className="text-gray-400" /> Insérer dans un
+                  département
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
+                  <RefreshCw size={16} className="text-gray-400" /> Rétirer d'un
+                  département
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
+                  <Users size={16} className="text-gray-400" /> Insérer dans un
+                  groupe
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3">
+                  <RefreshCw size={16} className="text-gray-400" /> Rétirer d'un
+                  groupe
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 px-4 py-2 bg-white text-blue-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors shadow-sm"
+        >
+          <ArrowLeft size={16} />
+          <span>Retour</span>
+        </button>
       </header>
 
       {/* Carte principale des détails */}
