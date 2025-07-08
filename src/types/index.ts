@@ -6,6 +6,7 @@ export interface User {
   role: 'admin' | 'manager' | 'member';
 }
 
+
 export interface Member {
   id: string;
   name: string;
@@ -58,12 +59,16 @@ export interface MemberType {
   group: string;
   stage: string;
   tags: string[];
+  image?: string;
   initials: string;
   color: string;
-  nationality?: string;
-  profession?: string;
+  nationalite: string;
+  profession: string;
+  genre: "homme" | "femme" | "autre";
+  dateNaissance: string;
+  situationMatrimoniale: "celibataire" | "marie";
   birthDate?: string;
-  city?: string;
-  address?: string;
+  ville: string;
+  adresse: string;
   maritalStatus?: string;
 }

@@ -111,20 +111,19 @@ const MemberDetailsPage: React.FC<MemberDetailsPageProps> = ({
   }
 
   const infoDetails: Record<string, string> = {
-    Nationalité: member.nationality || "Non spécifiée",
+    Nationalité: member.nationalite || "Non spécifiée",
     Profession: member.profession || "Non spécifiée",
     "Date de naissance": member.birthDate || "Non spécifiée",
-    Ville: member.city || "Non spécifiée",
-    Adresse: member.address || "Non spécifiée",
+    Ville: member.ville || "Non spécifiée",
+    Adresse: member.adresse || "Non spécifiée",
     "Situation matrimoniale": member.maritalStatus || "Non spécifiée",
   };
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] p-4 sm:p-6 lg:p-8 font-sans">
       {/* En-tête de la page */}
-      <header className="flex justify-between items-center mb-6">
+      <header className="flex mx-auto max-w-6xl justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800 uppercase">Details</h1>
-        <div className="flex items-center gap-4">
           <div className="relative">
             <button
               onClick={() => setIsActionMenuOpen(!isActionMenuOpen)}
@@ -170,7 +169,7 @@ const MemberDetailsPage: React.FC<MemberDetailsPageProps> = ({
             <ArrowLeft size={16} />
             <span>Retour</span>
           </button>
-        </div>
+        
       </header>
 
       {/* Carte principale des détails */}

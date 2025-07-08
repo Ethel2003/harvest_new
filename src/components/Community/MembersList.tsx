@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   Search,
   Plus,
@@ -371,7 +372,10 @@ const MembersList = () => {
                                   setShowMemberActions(null);
                                 }}
                               >
-                                <Eye size={16} className="text-green-500 mt-1" />
+                                <Eye
+                                  size={16}
+                                  className="text-green-500 mt-1"
+                                />
                                 <div>
                                   <p>Voir</p>
                                   <p className="text-xs text-gray-400">
@@ -379,18 +383,24 @@ const MembersList = () => {
                                   </p>
                                 </div>
                               </li>
-                              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-start gap-3">
-                                <Edit
-                                  size={16}
-                                  className="text-blue-500 mt-1"
-                                />
-                                <div>
-                                  <p>Modifier</p>
-                                  <p className="text-xs text-gray-400">
-                                    Modifier les détails du membre
-                                  </p>
-                                </div>
-                              </li>
+                              <Link
+                                to={`/community/edit/${member.id}`}
+                                onClick={() => setShowMemberActions(null)} // Ferme le menu en naviguant
+                              >
+                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-start gap-3">
+                                  <Edit
+                                    size={16}
+                                    className="text-blue-500 mt-1"
+                                  />
+                                  <div>
+                                    <p>Modifier</p>
+                                    <p className="text-xs text-gray-400">
+                                      Modifier les détails du membre
+                                    </p>
+                                  </div>
+                                </li>
+                              </Link>
+
                               <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-start gap-3 text-red-600">
                                 <Trash2 size={16} className="mt-1" />
                                 <div>

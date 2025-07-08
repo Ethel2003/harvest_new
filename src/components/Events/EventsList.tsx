@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
-import AddEventModal from "./AddEventModal";
 
 // --- COMPOSANT CALENDRIER DYNAMIQUE ---
 const CalendarWidget = () => {
@@ -298,12 +298,12 @@ const EventsList = () => {
         {/* COLONNE DROITE - BARRE LATÉRALE */}
         <div className="w-full lg:w-72 flex-shrink-0">
           <div className="space-y-6">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="w-full bg-[#76C12C] text-white py-2.5 rounded-lg hover:bg-[#66a825] transition-colors font-semibold shadow-md"
+            <Link
+              to="/events/add" 
+              className="block text-center w-full bg-[#76C12C] text-white py-2.5 rounded-lg hover:bg-[#66a825] transition-colors font-semibold shadow-md"
             >
               Ajouter un événement
-            </button>
+            </Link>
             <CalendarWidget />
             <div className="bg-white rounded-lg shadow-sm">
               <div className="bg-[#76C12C] text-white text-center font-semibold py-2.5 rounded-t-lg">
@@ -336,12 +336,6 @@ const EventsList = () => {
           </div>
         </div>
       </div>
-
-      {/* Rendu de la Modale */}
-      <AddEventModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-      />
     </div>
   );
 };
