@@ -6,6 +6,7 @@ export interface User {
   role: 'admin' | 'manager' | 'member';
 }
 
+
 export interface Member {
   id: string;
   name: string;

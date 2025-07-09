@@ -1,5 +1,5 @@
 import React from "react";
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
 
 interface AddMemberFormProps {
   onClose: () => void;
@@ -179,15 +179,17 @@ const AddMemberForm: React.FC<AddMemberFormProps> = ({ onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors"
+              className="px-6 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors flex items-center gap-2"
+              aria-label="Fermer le formulaire"
             >
-              Fermer
+              <X size={18} /> Fermer
             </button>
             <button
               type="submit"
-              className="px-6 py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors"
+              className="bg-[#76C12C] text-white py-2.5 rounded-lg hover:bg-[#66a825] transition-colors font-semibold shadow-md px-6 flex items-center gap-2"
+              aria-label="Enregistrer le membre"
             >
-              Enregistrer
+              <Plus size={18} /> Enregistrer
             </button>
           </div>
         </form>

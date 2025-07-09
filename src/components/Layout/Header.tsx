@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
-import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import React, { useState } from "react";
+// IMPORTER NavLink ET Link
+import { NavLink, Link } from "react-router-dom";
+import { User, Settings, LogOut, ChevronDown } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
-interface HeaderProps {
-  currentPage: string;
-  onPageChange: (page: string) => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ currentPage, onPageChange }) => {
+//  MODIFIER LA SIGNATURE DU COMPOSANT
+const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const navItems = [
-    { key: 'dashboard', label: 'TABLEAU DE BORD' },
-    { key: 'community', label: 'COMMUNAUTÉ' },
-    { key: 'events', label: 'ÉVÉNEMENTS' },
-    { key: 'apps', label: 'APPS' },
-    { key: 'secretariat', label: 'SECRÉTARIAT' },
+    { key: "dashboard", label: "TABLEAU DE BORD" },
+    { key: "community", label: "COMMUNAUTÉ" },
+    { key: "events", label: "ÉVÉNEMENTS" },
+    { key: "apps", label: "APPS" },
+    { key: "secretariat", label: "SECRÉTARIAT" },
   ];
 
   return (
@@ -35,24 +33,26 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onPageChange }) => {
             </div>
           </div>
 
-          {/* Navigation */}
+          {/* 4. MODIFIER LA NAVIGATION PRINCIPALE */}
           <nav className="hidden md:flex space-x-8">
             {navItems.map((item) => (
-              <button
+              <NavLink
                 key={item.key}
-                onClick={() => onPageChange(item.key)}
-                className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
-                  currentPage === item.key
-                    ? 'text-[#72C02C] border-b-2 border-[#72C02C]'
-                    : 'text-gray-600 hover:text-[#72C02C]'
-                }`}
+                to={`/${item.key}`}
+                className={({ isActive }) =>
+                  `px-3 py-2 text-sm font-medium transition-colors duration-200 ${
+                    isActive
+                      ? "text-[#72C02C] border-b-2 border-[#72C02C]"
+                      : "text-gray-600 hover:text-[#72C02C]"
+                  }`
+                }
               >
                 {item.label}
-              </button>
+              </NavLink>
             ))}
           </nav>
 
-          {/* User Menu */}
+          {/* Menu Utilisateur (avec des modifications mineures) */}
           <div className="relative">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
@@ -69,16 +69,16 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onPageChange }) => {
 
             {showUserMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                <button
-                  onClick={() => {
-                    setShowUserMenu(false);
-                    onPageChange('settings');
-                  }}
+                {/* 5. LE BOUTON "PARAMÈTRES" DEVIENT UN LIEN */}
+                <Link
+                  to="/settings" // Navigation vers la page des paramètres
+                  onClick={() => setShowUserMenu(false)}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
                 >
                   <Settings className="w-4 h-4" />
                   <span>Paramètres</span>
-                </button>
+                </Link>
+                {/* Le bouton de déconnexion} */}
                 <button
                   onClick={() => {
                     setShowUserMenu(false);

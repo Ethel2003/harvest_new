@@ -285,8 +285,8 @@ const FormBuilder: React.FC = () => {
                       <span>{item.name}</span>
                       {activeApp === "formulaire" ? (
                         <>
-                          <span>{(item as Form).fields.length} champ(s)</span>
-                          <span>{(item as Form).submissions}</span>
+                          <span>{item.fields.length} champ(s)</span>
+                          <span>{item.submissions}</span>
                         </>
                       ) : (
                         <span className="truncate">{item.description}</span>
