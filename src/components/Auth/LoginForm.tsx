@@ -9,12 +9,13 @@ const LoginForm: React.FC = () => {
   const [showResetForm, setShowResetForm] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSent, setResetSent] = useState(false);
-  const { login, resetPassword, isLoading } = useAuth();
+  const { login, resetPassword, isLoading, error, clearError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearError();
     try {
-      await login(email, password);
+      await login({ email, password });
     } catch (error) {
       console.error('Login failed:', error);
     }
@@ -22,6 +23,7 @@ const LoginForm: React.FC = () => {
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearError();
     try {
       await resetPassword(resetEmail);
       setResetSent(true);
@@ -46,6 +48,12 @@ const LoginForm: React.FC = () => {
                 Entrez votre email pour recevoir un lien de réinitialisation
               </p>
             </div>
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                {error}
+              </div>
+            )}
 
             {resetSent ? (
               <div className="text-center">
@@ -120,6 +128,12 @@ const LoginForm: React.FC = () => {
               Connectez-vous à votre espace de gestion
             </p>
           </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

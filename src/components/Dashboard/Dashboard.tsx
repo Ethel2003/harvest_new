@@ -1,75 +1,98 @@
 import React from 'react';
 import { Users, Building, UserCheck, Calendar, TrendingUp, MoreHorizontal } from 'lucide-react';
 import StatsCard from './StatsCard';
-import LineChart from './LineChart';
+import MemberEvolutionChart from './MemberEvolutionChart';
 import PieChart from './PieChart';
+import { DashboardStats, DepartementType, GroupeType } from '../../types';
+import { useEffect, useState } from 'react';
+import { statisticsService } from '../../services';
+import { convertColorToHex } from '../../utils/colorUtils';
 
 const Dashboard: React.FC = () => {
-  const stats = [
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [groups, setGroups] = useState<GroupeType | null>(null);
+  const [departments, setDepartments] = useState<DepartementType | null>(null);
+
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Récupérer les statistiques du tableau de bord
+        const response = await statisticsService.getDashboardStats();
+        
+        if (response.data) {
+          setStats(response.data);
+        }
+
+        // Récupérer les statistiques des groupes
+        const groupResponse = await statisticsService.getGroupStatistics();
+   
+        if (groupResponse.data) {
+          setGroups(groupResponse.data);
+        }
+
+        // Récupérer les statistiques des départements
+        const departmentResponse = await statisticsService.getDepartmentStatistics();
+        
+        if (departmentResponse.data) {
+          setDepartments(departmentResponse.data);
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des statistiques:", error);
+        // Vous pouvez ajouter ici une gestion d'erreur plus sophistiquée
+        // comme afficher un message d'erreur à l'utilisateur
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const statsCards = [
     {
       title: 'Nombre de groupes',
-      value: 13,
+      value: stats?.groups || 0,
       icon: Users,
       color: 'bg-purple-500',
       iconColor: 'text-purple-600'
     },
     {
       title: 'Nombre de départements',
-      value: 13,
+      value: stats?.departments || 0,
       icon: Building,
       color: 'bg-orange-500',
       iconColor: 'text-orange-600'
     },
     {
       title: 'Nombre d\'utilisateurs',
-      value: 1,
+      value: stats?.users || 0,
       icon: UserCheck,
       color: 'bg-green-500',
       iconColor: 'text-green-600'
     },
     {
       title: 'Nombre de membres',
-      value: 656,
+      value: stats?.members || 0,
       icon: Users,
       color: 'bg-blue-500',
       iconColor: 'text-blue-600'
     }
   ];
 
-  const newMembersData = [
-    { date: '30 Jun', value: 0 },
-    { date: 'Jul \'25', value: 1 },
-    { date: '02 Jul', value: 2 },
-    { date: '03 Jul', value: 3 },
-    { date: '04 Jul', value: 4 },
-    { date: '05 Jul', value: 5 },
-    { date: '06 Jul', value: 4 }
-  ];
 
-  const groupsData = [
-    { name: 'FR Paralelos', value: 16.7, color: '#4ade80' },
-    { name: 'FR Agneau de Dieu', value: 16.7, color: '#22c55e' },
-    { name: 'FR Le Véritable', value: 11.1, color: '#16a34a' },
-    { name: 'FR Oméga', value: 11.1, color: '#15803d' },
-    { name: 'FR Admirable', value: 11.1, color: '#166534' },
-    { name: 'FR La Fidèle', value: 11.1, color: '#14532d' },
-    { name: 'FR Amen', value: 11.1, color: '#365314' },
-    { name: 'FR Lion de la tribu de Juda', value: 8.3, color: '#fbbf24' },
-    { name: 'Groupe Test', value: 19.4, color: '#6b7280' },
-    { name: 'FR Le Rocher', value: 11.1, color: '#ef4444' },
-    { name: 'FR Prince de paix', value: 11.1, color: '#3b82f6' },
-    { name: 'FR Fils de David', value: 11.1, color: '#06b6d4' },
-    { name: 'FR Alpha', value: 11.1, color: '#8b5cf6' }
-  ];
 
-  const departmentsData = [
-    { name: 'Conciergerie', value: 100, color: '#22c55e' }
-  ];
+ 
+  const groupsData = groups?.data?.groupes?.map(groupe => ({
+    name: groupe.nom,
+    value: groupe.membres_count,
+    color: convertColorToHex(groupe.color)
+  })) || []
 
-  const departmentsList = [
-    'Conciergerie', 'Santé divine', 'Coordination', 'DSIT', 'MHI', 'Entretien',
-    'Accueil', 'Chorale', 'MFI', 'MFI', 'Audiovisuel', 'Intégration', 'Communication'
-  ];
+ 
+  const departmentsData = departments?.data?.departements?.map(departement => ({
+    name: departement.nom,
+    value: departement.membres_count,
+    color: convertColorToHex(departement.color)
+  })) || []
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -80,27 +103,37 @@ const Dashboard: React.FC = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, index) => (
+        {statsCards.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
       </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* New Members Chart */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Nouveaux membres</h3>
-            <button className="text-gray-400 hover:text-gray-600">
-              <MoreHorizontal className="w-5 h-5" />
-            </button>
-          </div>
-          <LineChart data={newMembersData} />
-        </div>
-
-        {/* Empty space for balance */}
-        <div></div>
+      {/* OPTION 1: Member Evolution Chart - Full Width (recommandé) */}
+      <div className="mb-8">
+        <MemberEvolutionChart 
+          title="Évolution des Membres"
+          height={400}
+          showFilters={true}
+          className="w-full"
+        />
       </div>
+
+      {/* OPTION 2: Charts Section avec deux colonnes (alternative) */}
+      {/* 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <MemberEvolutionChart 
+            title="Évolution des Membres"
+            height={300}
+            showFilters={true}
+          />
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Autre graphique</h3>
+          <p className="text-gray-500">Espace pour un autre graphique</p>
+        </div>
+      </div>
+      */}
 
       {/* Pie Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -127,14 +160,7 @@ const Dashboard: React.FC = () => {
             <div className="flex-1">
               <PieChart data={departmentsData} />
             </div>
-            <div className="ml-6 space-y-2">
-              {departmentsList.map((dept, index) => (
-                <div key={index} className="flex items-center space-x-2 text-sm">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span className="text-gray-700">{dept}</span>
-                </div>
-              ))}
-            </div>
+            
           </div>
         </div>
       </div>

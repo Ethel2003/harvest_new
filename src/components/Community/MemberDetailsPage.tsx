@@ -111,12 +111,12 @@ const MemberDetailsPage: React.FC<MemberDetailsPageProps> = ({
   }
 
   const infoDetails: Record<string, string> = {
-    Nationalité: member.nationality || "Non spécifiée",
+    Nationalité: member.nationalite || "Non spécifiée",
     Profession: member.profession || "Non spécifiée",
-    "Date de naissance": member.birthDate || "Non spécifiée",
-    Ville: member.city || "Non spécifiée",
-    Adresse: member.address || "Non spécifiée",
-    "Situation matrimoniale": member.maritalStatus || "Non spécifiée",
+    "Date de naissance": member.date_naissance || "Non spécifiée",
+    Ville: member.ville || "Non spécifiée",
+    Adresse: member.adresse || "Non spécifiée",
+    "Situation matrimoniale": member.situation_matrimoniale || "Non spécifiée",
   };
 
   return (
@@ -184,7 +184,7 @@ const MemberDetailsPage: React.FC<MemberDetailsPageProps> = ({
             {member.initials}
           </div>
           <h2 className="mt-4 text-2xl font-semibold text-gray-900">
-            {member.name} {member.firstName}
+            {member.nom} {member.prenom}
           </h2>
         </div>
         <hr className="my-8" />
@@ -199,7 +199,7 @@ const MemberDetailsPage: React.FC<MemberDetailsPageProps> = ({
             <DataPlaceholder title="Intégration" />
           </div>
           <div className="lg:col-span-1 space-y-8">
-            <TagsSection tags={member.tags} />
+            <TagsSection tags={member.tags.map((tag) => tag.nom)} />
             <FamilySection />
           </div>
         </div>
