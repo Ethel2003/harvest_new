@@ -1,88 +1,16 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  User,
-  Settings,
   Search,
   Calendar,
   Plus,
-  ChevronRight,
-  Upload,
   ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+import Sidebar from "./Sidebar";
 import AppointmentModal from "./AppointmentModal";
-import AvailabilityModal from "./AvailabilityModal";
-import CategoryModal from "./CategoryModal";
 
-// --- SOUS-COMPOSANTS POUR UNE ORGANISATION IMPECCABLE ---
-
-/**
- * La barre latérale de gauche avec le profil et la navigation interne.
- */
-const Sidebar: React.FC<{
-  onDisponibiliteClick: () => void;
-  onCategorieClick: () => void;
-}> = ({ onDisponibiliteClick, onCategorieClick }) => {
-  const [activeTab, setActiveTab] = useState("rendez-vous");
-
-  const navItems = [
-    { key: "rendez-vous", label: "Rendez-vous", icon: User },
-    { key: "disponibilites", label: "Disponibilités", icon: Calendar },
-    { key: "categories", label: "Catégories de Rendez-vous", icon: Settings },
-  ];
-
-  return (
-    <aside className="w-full lg:w-72 flex-shrink-0">
-      <div className="space-y-6">
-        <button className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#6c757d] text-white rounded-lg hover:bg-[#5a6268] transition-colors shadow-sm font-medium text-sm">
-          <Upload size={16} />
-          <span>Exporter une liste de Membre</span>
-        </button>
-        <div className="bg-white rounded-xl shadow-md border border-gray-200 p-4">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
-              <User size={28} className="text-white" />
-            </div>
-            <span className="font-semibold text-gray-800">utilisateur1</span>
-          </div>
-          <nav className="space-y-2">
-            {navItems.map((item) => (
-              <a
-                key={item.key}
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setActiveTab(item.key);
-                  if (item.key === "disponibilites") onDisponibiliteClick();
-                  if (item.key === "categories") onCategorieClick();
-                }}
-                className={`flex items-center justify-between p-3 rounded-lg text-sm font-medium transition-colors ${
-                  activeTab === item.key
-                    ? "bg-green-50 text-green-700 border border-green-200 shadow-sm"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <item.icon
-                    size={18}
-                    className={`${
-                      activeTab === item.key
-                        ? "text-green-600"
-                        : "text-gray-400"
-                    }`}
-                  />
-                  <span>{item.label}</span>
-                </div>
-                {activeTab === item.key && (
-                  <ChevronRight size={16} className="text-green-600" />
-                )}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </div>
-    </aside>
-  );
-};
+// --- SOUS-COMPOSANTS ---
 
 /**
  * Le magnifique état "vide" avec l'illustration SVG recréée.
@@ -204,35 +132,33 @@ const EmptyState: React.FC = () => (
   </div>
 );
 
+
 /**
- * Le composant principal qui assemble la page.
+ * Le composant principal, maintenant simplifié.
  */
 const AppointmentsList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [appointments, setAppointments] = useState([]); // Liste vide par défaut pour afficher l'état vide
+  const [appointments, setAppointments] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
-  const filteredAppointments = appointments.filter(() => true); // Adaptez la logique de recherche ici
+  // 3. Suppression des états pour les autres modales
+  // const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
+  // const [showCategoryModal, setShowCategoryModal] = useState(false);
+
+  const filteredAppointments = appointments.filter(() => true);
 
   return (
     <div className="bg-[#f5f5f5] min-h-screen p-4 sm:p-6 lg:p-8 font-sans">
       <div className="flex flex-col lg:flex-row gap-6">
-        <Sidebar
-          onDisponibiliteClick={() => setShowAvailabilityModal(true)}
-          onCategorieClick={() => setShowCategoryModal(true)}
-        />
+        {/* 4. On passe la clé de l'onglet actif au Sidebar */}
+        <Sidebar activeKey="rendez-vous" />
 
         <main className="flex-1">
           <div className="bg-white rounded-xl shadow-md border border-gray-200 min-h-[85vh] flex flex-col">
             <div className="p-4 flex flex-wrap gap-4 justify-between items-center border-b border-gray-200">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <Search
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                    size={18}
-                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                   <input
                     type="text"
                     placeholder="Rechercher..."
@@ -241,21 +167,17 @@ const AppointmentsList: React.FC = () => {
                     className="w-full max-w-xs pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-50"
                   />
                 </div>
-                <span className="text-sm text-gray-500">
-                  {filteredAppointments.length} enregistrement trouvé
-                </span>
+                <span className="text-sm text-gray-500">{filteredAppointments.length} enregistrement trouvé</span>
               </div>
               <div className="flex items-center gap-2">
                 <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm font-medium flex items-center gap-2 transition-colors">
-                  <Calendar size={16} />
-                  Voir le résumé
+                  <Calendar size={16} /> Voir le résumé
                 </button>
                 <button
                   onClick={() => setShowAddModal(true)}
                   className="bg-[#76C12C] text-white py-2.5 rounded-lg hover:bg-[#66a825] transition-colors font-semibold shadow-md px-4 flex items-center gap-2"
                 >
-                  <Plus size={16} />
-                  Créer un nouveau rendez-vous
+                  <Plus size={16} /> Créer un nouveau rendez-vous
                 </button>
               </div>
             </div>
@@ -264,55 +186,22 @@ const AppointmentsList: React.FC = () => {
               {filteredAppointments.length === 0 ? (
                 <EmptyState />
               ) : (
-                <div className="p-4">
-                  <p>La liste des rendez-vous apparaîtrait ici.</p>
-                </div>
+                <div className="p-4"><p>La liste des rendez-vous apparaîtrait ici.</p></div>
               )}
             </div>
 
             <div className="p-4 flex justify-end items-center border-t border-gray-200 mt-auto">
-              <div className="flex items-center gap-2">
-                <button
-                  disabled
-                  className="p-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <button
-                  disabled
-                  className="p-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
+                <div className="flex items-center gap-2">
+                    <button disabled className="p-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"><ChevronLeft size={18} /></button>
+                    <button disabled className="p-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"><ChevronRight size={18} /></button>
+                </div>
             </div>
           </div>
         </main>
       </div>
 
       {showAddModal && (
-        <AppointmentModal
-          onClose={() => setShowAddModal(false)}
-          onSubmit={(data) => {
-            setShowAddModal(false);
-          }}
-        />
-      )}
-      {showAvailabilityModal && (
-        <AvailabilityModal
-          onClose={() => setShowAvailabilityModal(false)}
-          onSubmit={(data) => {
-            setShowAvailabilityModal(false);
-          }}
-        />
-      )}
-      {showCategoryModal && (
-        <CategoryModal
-          onClose={() => setShowCategoryModal(false)}
-          onSubmit={(data) => {
-            setShowCategoryModal(false);
-          }}
-        />
+        <AppointmentModal onClose={() => setShowAddModal(false)} onSubmit={() => { setShowAddModal(false); }}/>
       )}
     </div>
   );

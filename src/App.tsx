@@ -13,8 +13,9 @@ import Settings from "./components/Settings/Settings";
 // Pages
 import AddEventPage from "./components/Events/AddEventPage"; // Ajustez les chemins si besoin
 import EditMemberPage from "./components/Community/EditMemberPage";
-import MemberDetailsPage from "./components/Community/MemberDetailsPage";
 import MemberDetailsWrapper from "./components/Community/MemberDetailsWrapper";
+import AvailabilityListPage from "./components/Secretariat/AvailabilityListPage";
+import CategoryListPage from "./components/Secretariat/CategoryListPage";
 
 // Ce composant gère l'affichage conditionnel (chargement, login, ou app principale)
 const AppContent: React.FC = () => {
@@ -52,6 +53,11 @@ const AppContent: React.FC = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/apps" element={<FormBuilder />} />
           <Route path="/secretariat" element={<AppointmentsList />} />
+          <Route path="/secretariat/availabilities" element={<AvailabilityListPage />} />
+          <Route path="/secretariat/categories" element={<CategoryListPage  />} />
+
+          {/* Route pour les paramètres */}
+          
           <Route path="/settings" element={<Settings />} />
 
           {/* Routes pour la Communauté (Members) */}
