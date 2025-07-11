@@ -209,7 +209,7 @@ const FormListPage: React.FC = () => {
                             <button className="p-3 text-blue-600 rounded-full transition-colors duration-200 hover:bg-blue-100 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200">
                               <Edit2 size={16} />
                             </button>
-                            <button className="p-3 text-blue-600 rounded-full transition-colors duration-200 hover:bg-blue-100 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                            <button className="p-3 text-red-600 rounded-full transition-colors duration-200 hover:bg-blue-100 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200">
                               <Trash2 size={16} />
                             </button>
                           </div>
