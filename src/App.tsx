@@ -6,9 +6,9 @@ import LoginForm from "./components/Auth/LoginForm";
 import Dashboard from "./components/Dashboard/Dashboard";
 import MembersList from "./components/Community/MembersList";
 import EventsList from "./components/Events/EventsList";
-import FormBuilder from "./components/Apps/FormBuilder";
 import AppointmentsList from "./components/Secretariat/AppointmentsList";
 import Settings from "./components/Settings/Settings";
+import AppHub from "./components/Apps/AppHub";
 
 // Pages
 import AddEventPage from "./components/Events/AddEventPage"; // Ajustez les chemins si besoin
@@ -16,6 +16,11 @@ import EditMemberPage from "./components/Community/EditMemberPage";
 import MemberDetailsWrapper from "./components/Community/MemberDetailsWrapper";
 import AvailabilityListPage from "./components/Secretariat/AvailabilityListPage";
 import CategoryListPage from "./components/Secretariat/CategoryListPage";
+import DepartmentsListPage from "./components/Apps/DepartmentsListPage";
+import TagsListPage from "./components/Apps/TagsListPage";
+import GroupsListPage from "./components/Apps/GroupsListPage";
+import FormListPage from "./components/Apps/FormListPage";
+import SurveyListPage from "./components/Apps/SurveyListPage";
 
 // Ce composant gère l'affichage conditionnel (chargement, login, ou app principale)
 const AppContent: React.FC = () => {
@@ -51,13 +56,28 @@ const AppContent: React.FC = () => {
         <Routes>
           {/* Routes de base */}
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/apps" element={<FormBuilder />} />
+          <Route path="/apps" element={<AppHub />} />
+          {/* <Route path="/apps/forms" element={<FormBuilderPage />} /> */}
+
+          {/* Routes pour Secretariat */}
           <Route path="/secretariat" element={<AppointmentsList />} />
-          <Route path="/secretariat/availabilities" element={<AvailabilityListPage />} />
-          <Route path="/secretariat/categories" element={<CategoryListPage  />} />
+          <Route
+            path="/secretariat/availabilities"
+            element={<AvailabilityListPage />}
+          />
+          <Route
+            path="/secretariat/categories"
+            element={<CategoryListPage />}
+          />
+
+          {/* Routes pour les nouveaux modules */}
+          <Route path="/departments" element={<DepartmentsListPage />} />
+          <Route path="/tags" element={<TagsListPage />} />
+          <Route path="/groups" element={<GroupsListPage />} />
+          <Route path="/apps/forms" element={<FormListPage />} />
+          <Route path="/apps/surveys" element={<SurveyListPage />} />
 
           {/* Route pour les paramètres */}
-          
           <Route path="/settings" element={<Settings />} />
 
           {/* Routes pour la Communauté (Members) */}
@@ -74,7 +94,6 @@ const AppContent: React.FC = () => {
           {/* Routes pour les Événements */}
           <Route path="/events" element={<EventsList />} />
           <Route path="/events/add" element={<AddEventPage />} />
-          {/* Vous pourriez ajouter ici : <Route path="/events/edit/:eventId" element={<EditEventPage />} /> */}
 
           {/* Route par défaut : redirige vers le tableau de bord */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

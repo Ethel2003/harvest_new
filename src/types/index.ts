@@ -3,9 +3,8 @@ export interface User {
   email: string;
   name: string;
   avatar?: string;
-  role: 'admin' | 'manager' | 'member';
+  role: "admin" | "manager" | "member";
 }
-
 
 export interface Member {
   id: string;
@@ -17,7 +16,7 @@ export interface Member {
   stage: string;
   tags: string[];
   joinDate: string;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
 }
 
 export interface Event {
@@ -29,7 +28,7 @@ export interface Event {
   location: string;
   attendees: number;
   maxAttendees?: number;
-  type: 'meeting' | 'workshop' | 'conference' | 'social';
+  type: "meeting" | "workshop" | "conference" | "social";
 }
 
 export interface Appointment {
@@ -39,7 +38,7 @@ export interface Appointment {
   date: string;
   time: string;
   duration: number;
-  status: 'scheduled' | 'confirmed' | 'cancelled' | 'completed';
+  status: "scheduled" | "confirmed" | "cancelled" | "completed";
   notes?: string;
 }
 
@@ -71,4 +70,11 @@ export interface MemberType {
   ville: string;
   adresse: string;
   maritalStatus?: string;
+}
+
+export interface Department {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
 }
